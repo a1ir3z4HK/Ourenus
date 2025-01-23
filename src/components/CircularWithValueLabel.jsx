@@ -22,14 +22,14 @@ function CircularProgressWithLabel({ value }) {
   );
 
   const getStyles = (value) => {
-    if (value === Infinity) {
+    if (value === Infinity || Number.isNaN(value)) {
       return {
         gradientColors: theme.colors.gradients.high.colors[theme.palette.mode],
         backgroundColor: theme.colors.gradients.high.background,
         typographyGradient: theme.colors.gradients.high.typographyGradient,
       };
     }
-    if (value <= 30 || value > 100) {
+    if (value <= 30) {
       return {
         gradientColors: theme.colors.gradients.high.colors[theme.palette.mode],
         backgroundColor: theme.colors.gradients.high.background,
@@ -52,7 +52,9 @@ function CircularProgressWithLabel({ value }) {
   };
 
   const processedValue =
-    value === Infinity ? 0 : value > 100 ? 100 : value > 0 ? value : 0;
+    value === Infinity || isNaN(value)
+      ? Infinity
+      : Math.max(0, Math.min(value, 100));
 
   const { gradientColors, backgroundColor, typographyGradient } =
     getStyles(value);
@@ -61,7 +63,7 @@ function CircularProgressWithLabel({ value }) {
     <Box sx={{ position: "relative", display: "inline-flex" }}>
       <CircularProgress
         variant="determinate"
-        value={processedValue}
+        value={processedValue === Infinity ? 100 : processedValue}
         size={85}
         sx={{
           color: "transparent",
@@ -106,7 +108,9 @@ function CircularProgressWithLabel({ value }) {
             textAlign: "center",
           }}
         >
-          {`${Math.round(processedValue)}%`}
+          {`${
+            processedValue === Infinity ? "∞" : Math.round(processedValue) + "%"
+          }`}
         </Typography>
       </Box>
 
